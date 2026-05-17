@@ -1,0 +1,18 @@
+# Python
+venv/
+**/venv/
+.venv/
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Do not commit keys or certificates
+*.pem
+.pem
+
+# Build outputs
+assignment1/extension/dist/

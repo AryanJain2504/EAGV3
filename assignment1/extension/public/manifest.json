@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "PagePilot",
+  "version": "1.0.0",
+  "description": "Summarize the current page with Gemini Flash and suggest relevant content.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["activeTab", "bookmarks", "scripting", "storage"],
+  "host_permissions": ["http://127.0.0.1:8000/*", "http://localhost:8000/*"],
+  "icons": {
+    "48": "icon.svg"
+  }
+}

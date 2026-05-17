@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist.crx
+.env
+*.pem
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.idea/
+package-lock.json
