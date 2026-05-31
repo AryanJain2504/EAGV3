@@ -1,0 +1,17 @@
+{
+  "positions": [
+    {
+      "ticker": "CRM",
+      "action": "BUY",
+      "amount": 1000.0,
+      "timestamp": "2026-05-31T15:48:53.139535"
+    },
+    {
+      "ticker": "CRM",
+      "action": "BUY",
+      "amount": 10000.0,
+      "timestamp": "2026-05-31T15:50:05.219985"
+    }
+  ],
+  "cash": 100000.0
+}

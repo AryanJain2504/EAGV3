@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Financial Agent",
+  "description": "An autonomous AI agent that researches stocks, executes paper trades, and sets alerts.",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Financial Agent"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*",
+    "*://*/*"
+  ]
+}
