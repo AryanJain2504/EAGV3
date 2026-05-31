@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Smart Tab Organizer",
+  "description": "Uses Gemini AI to automatically organize your browser tabs into colored groups",
+  "version": "1.0",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Organize Tabs"
+  },
+  "permissions": [
+    "tabs",
+    "tabGroups",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*",
+    "*://*/*"
+  ]
+}
