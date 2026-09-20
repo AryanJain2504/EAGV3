@@ -1,0 +1,84 @@
+{
+  "total_turns": 4,
+  "total_duration_seconds": 106.31,
+  "escalation_triggered": false,
+  "telemetry_trace": [
+    {
+      "turn": 1,
+      "provider": "ollama",
+      "model": "qwen3:8b",
+      "latency_ms": 30809,
+      "reasoning_type": "deductive",
+      "confidence": 0.95,
+      "is_reasonable": true,
+      "tools_called": [
+        "query_system_logs",
+        "inspect_network_topology"
+      ],
+      "parallel": true,
+      "escalation_fired": false,
+      "is_final": false
+    },
+    {
+      "turn": 2,
+      "provider": "ollama",
+      "model": "qwen3:8b",
+      "latency_ms": 24980,
+      "reasoning_type": "lookup",
+      "confidence": 0.95,
+      "is_reasonable": true,
+      "tools_called": [
+        "lookup_threat_intel"
+      ],
+      "parallel": false,
+      "escalation_fired": false,
+      "is_final": false
+    },
+    {
+      "turn": 3,
+      "provider": "ollama",
+      "model": "qwen3:8b",
+      "latency_ms": 21128,
+      "reasoning_type": "diagnostic",
+      "confidence": 0.95,
+      "is_reasonable": true,
+      "tools_called": [
+        "simulate_mitigation"
+      ],
+      "parallel": false,
+      "escalation_fired": false,
+      "is_final": false
+    },
+    {
+      "turn": 4,
+      "provider": "ollama",
+      "model": "qwen3:8b",
+      "latency_ms": 29379,
+      "reasoning_type": "verification",
+      "confidence": 0.99,
+      "is_reasonable": true,
+      "tools_called": [],
+      "parallel": false,
+      "escalation_fired": false,
+      "is_final": true
+    }
+  ],
+  "final_report": {
+    "incident_id": "INC-2026-8921",
+    "threat_level": "CRITICAL",
+    "root_cause": "Remote JWT Signature Bypass via CVE-2026-3199 exploit by actor UNC4912",
+    "affected_services": [
+      "auth-proxy-us-east",
+      "session-cache-redis"
+    ],
+    "mitigation_actions_taken": [
+      "WAF egress/ingress block applied to IP 198.51.100.44",
+      "Compromised auth-proxy pod isolated for forensic capture",
+      "KMS signing keys rotated and Redis session tokens invalidated"
+    ],
+    "confidence_score": 0.99,
+    "rollback_safety_plan": "Playbook RB-202: Restore previous KMS key from backup vault if legitimate client session drop > 2%",
+    "executive_summary": "INCIDENT RESOLVED: Contained active exploitation of CVE-2026-3199 by UNC4912. IP blocked, affected pod isolated, and JWT signing keys rotated with 0% downtime.",
+    "escalation_triggered": false
+  }
+}
