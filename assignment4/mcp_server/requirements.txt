@@ -1,0 +1,10 @@
+mcp[cli]
+requests
+fastmcp
+python-dotenv
+prefab-ui
+fastapi
+uvicorn
+sse-starlette
+httpx
+google-genai

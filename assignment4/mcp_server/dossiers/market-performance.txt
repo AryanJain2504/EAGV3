@@ -1,0 +1,12 @@
+MARKET PERFORMANCE DOSSIER
+Period: 87 days
+
+TSLA
+Start price: 375.12 USD
+End price: 364.27 USD
+Change: -10.85 (-2.89%)
+
+GOOGL
+Start price: 343.71 USD
+End price: 349.54 USD
+Change: +5.83 (+1.70%)
