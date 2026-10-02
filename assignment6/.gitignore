@@ -1,0 +1,15 @@
+# Runtime state (rebuilt per run; never committed)
+state/
+usage.json
+
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# MCP sandbox outputs live under assignment6/sandbox/ only at runtime
+sandbox/

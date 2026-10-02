@@ -1,0 +1,10 @@
+{
+  "run_id": "run_1e7187e6",
+  "query": "When is my mom's birthday?",
+  "iterations": 2,
+  "duration_s": 66.25,
+  "final_answer": "Mom's birthday is 2026-05-15.",
+  "goals": [
+    {"id": "g1", "text": "Answer the question 'When is my mom's birthday?' using the known fact that mom's birthday is 2026-05-15", "done": true, "attach_artifact_id": null}
+  ]
+}
