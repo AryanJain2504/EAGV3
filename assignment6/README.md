@@ -147,6 +147,39 @@ done in 5 iterations (292.06s)
 final: numbered asyncio best-practice synthesis shown above.
 ```
 
+## PoP Validation
+
+The complete validation artifact is available here: [pop_validation.json](pop_validation.json).
+
+### Perception Prompt Validation
+
+```json
+{
+	"decompose_on_empty_prior": true,
+	"same_order_no_drop": true,
+	"done_only_from_history": true,
+	"artifact_id_routing": true,
+	"strict_json": true,
+	"few_shots": true,
+	"perception_pass": true
+}
+```
+
+### Decision Prompt Validation
+
+```json
+{
+	"one_goal_only": true,
+	"answer_xor_toolcall": true,
+	"single_tool_max": true,
+	"no_tool_invention": true,
+	"attachment_extraction": true,
+	"strict_json": true,
+	"few_shots": true,
+	"decision_pass": true
+}
+```
+
 ## YouTube
 
 TODO: link demonstrating all four queries end to end.
