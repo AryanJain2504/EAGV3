@@ -1,0 +1,15 @@
+{
+  "run_id": "run_8177768f",
+  "query": "When is my mom's birthday?",
+  "iterations": 2,
+  "duration_s": 15.31,
+  "final_answer": "Mom's birthday is 2026-05-15.",
+  "goals": [
+    {
+      "id": "g1",
+      "text": "Extract mom's birthday from memory hits",
+      "done": true,
+      "attach_artifact_id": null
+    }
+  ]
+}

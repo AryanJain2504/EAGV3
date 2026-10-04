@@ -19,7 +19,7 @@ Set answer OR tool_call, never both, never neither. Never emit more than one too
 Rules:
 - If the goal is directly answerable from the given hits, attachment, or history,
   put the complete answer in `answer` and null the tool_call.
-- For a direct memory lookup such as "When is my mom's birthday?", return the
+- For a direct memory lookup such as "When is Ada's graduation?", return the
   stored fact value in a natural-language answer. Do not describe the memory
   operation and do not say "fact saved" when the user asked for the fact.
 - For factual extraction, use the attachment as the source of truth: copy dates,
@@ -28,6 +28,9 @@ Rules:
   to obtain a better source instead of guessing.
 - Otherwise emit ONE tool_call with the exact tool name and arguments from the
   provided tool list. Do not invent tools. Do not chain calls.
+- When the goal asks you to create, set, save, schedule, send, or book
+  something, perform the requested action with an available tool. Do not
+  claim it was done based on an answer; an action goal needs a tool result.
 - To open, read, or browse any URL use ONLY `fetch_url({"url": "..."})`. There is
   no tool named `open_url`, `browse`, `open`, or `visit`. Using those will fail.
 - If an attachment (artifact bytes) is provided, read it and extract ONLY what
@@ -58,20 +61,12 @@ Rules:
 - Output ONLY the JSON object, no prose, no markdown fences.
 
 FEW-SHOT 1 (tool call):
-DecisionIn: goal="Fetch the Wikipedia page for Claude Shannon via fetch_url", hits=[], attachment=null
-Output: {"answer": null, "tool_call": {"name": "fetch_url", "arguments": {"url": "https://en.wikipedia.org/wiki/Claude_Shannon"}}}
+DecisionIn: goal="Fetch the contributor guide for Acme Widgets via fetch_url", hits=[], attachment=null
+Output: {"answer": null, "tool_call": {"name": "fetch_url", "arguments": {"url": "https://example.com/acme-widgets/contributing"}}}
 
 FEW-SHOT 2 (extract from attachment):
-DecisionIn: goal="Extract birth date, death date and three key contributions from the fetched page", attachment="<263KB markdown, artifact #1>"
-Output: {"answer": "Born 30 April 1916, died 24 February 2001. Key contributions: A Mathematical Theory of Communication; founding the bit as the unit of information; channel capacity (Shannon limit).", "tool_call": null}
-
-FEW-SHOT 3 (select best option from previously listed options):
-DecisionIn: goal="Tell me which of the three family-friendly activities is most appropriate given the weather forecast", history=[decision "1. Tokyo DisneySea 2. teamLab Borderless 3. Ueno Park", action weather "Partly cloudy, 28C, light rain afternoon"], attachment=null
-Output: {"answer": "Based on the partly cloudy skies with light afternoon rain, Tokyo DisneySea is the most appropriate choice — it offers a mix of indoor and outdoor attractions so the family can move indoors if rain arrives.", "tool_call": null}
-
-FEW-SHOT 4 (translate from history — no tool needed):
-DecisionIn: goal="Translate the three bullet points into French", history=[decision "• A Turing machine is an abstract model of computation. • It uses a tape of symbols and a set of rules. • It defines the limits of what can be computed."], attachment=null
-Output: {"answer": "• Une machine de Turing est un modèle abstrait de calcul.\n• Elle utilise un ruban de symboles et un ensemble de règles.\n• Elle définit les limites de ce qui peut être calculé.", "tool_call": null}
+DecisionIn: goal="Extract birth date, death date and three key contributions from the fetched page", attachment="<41KB markdown, artifact #1>"
+Output: {"answer": "Born 4 March 1901, died 22 November 1975. Key contributions: lattice resonance theory; the harmonic probe method; low-temperature alloy tables.", "tool_call": null}
 """
 
 

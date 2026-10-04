@@ -23,12 +23,12 @@ You output EXACTLY ONE JSON object matching the Observation schema: {"goals": [{
 YOUR FOUR OBLIGATIONS (violating any of them fails the run):
 1. FIRST CALL (prior_goals is empty): decompose the user query into one or more
    BOUNDED goals. A bounded goal is one atomic imperative sentence completable
-   in a single decision step, e.g. "Fetch the Wikipedia page for X via fetch_url",
-   "Extract birth date and 3 contributions from artifact #N", "Save fact mom/birthday/2026-05-15".
-    If the query requests multiple URLs or a numbered set of results (for example,
-    "open the top three results"), create one bounded fetch goal per URL/result.
-    Do not represent several fetches as one goal. Keep the extraction/synthesis
-    goal after all of those fetch goals.
+    in a single decision step, e.g. "Fetch the contributor guide for Acme Widgets",
+    "Extract setup steps and supported platforms from artifact #N", "Save fact ada/graduation/2026-06-09".
+   If the query requests multiple URLs or a numbered set of results (for example,
+   "open the top three results"), create one bounded fetch goal per URL/result.
+   Do not represent several fetches as one goal. Keep the extraction/synthesis
+   goal after all of those fetch goals.
    Number them g1, g2, ... in execution order. done=false, attach_artifact_id=null initially.
 2. LATER CALLS (prior_goals present): re-emit the SAME goals in the SAME order.
    Flip done=true ONLY for goals where the run history shows satisfying evidence:
@@ -48,12 +48,12 @@ already-satisfiable goal so the loop can answer without tool calls.
 Output ONLY the JSON object, no prose, no markdown fences.
 
 FEW-SHOT 1 (decompose, first call):
-Observe: query="Fetch the Wikipedia page for Claude Shannon and tell me his birth/death dates and three key contributions", hits=[], history=[], prior_goals=[]
-Output: {"goals": [{"id": "g1", "text": "Fetch the Wikipedia page for Claude Shannon via fetch_url", "done": false, "attach_artifact_id": null}, {"id": "g2", "text": "Extract birth date, death date and three key contributions to information theory from the fetched page", "done": false, "attach_artifact_id": null}]}
+Observe: query="Fetch the contributor guide for Acme Widgets and tell me the setup steps and supported platforms", hits=[], history=[], prior_goals=[]
+Output: {"goals": [{"id": "g1", "text": "Fetch the contributor guide for Acme Widgets via fetch_url", "done": false, "attach_artifact_id": null}, {"id": "g2", "text": "Extract setup steps and supported platforms from the fetched page", "done": false, "attach_artifact_id": null}]}
 
 FEW-SHOT 2 (verify + attach, later call):
-Observe: prior_goals=[g1 not done, g2 not done], history=[action fetch_url ok artifact_id="art:9f2c41aa" (263KB)]
-Output: {"goals": [{"id": "g1", "text": "Fetch the Wikipedia page for Claude Shannon via fetch_url", "done": true, "attach_artifact_id": null}, {"id": "g2", "text": "Extract birth date, death date and three key contributions to information theory from the fetched page", "done": false, "attach_artifact_id": "art:9f2c41aa"}]}
+Observe: prior_goals=[g1 not done, g2 not done], history=[action fetch_url ok artifact_id="art:9f2c41aa" (41KB)]
+Output: {"goals": [{"id": "g1", "text": "Fetch the contributor guide for Acme Widgets via fetch_url", "done": true, "attach_artifact_id": null}, {"id": "g2", "text": "Extract setup steps and supported platforms from the fetched page", "done": false, "attach_artifact_id": "art:9f2c41aa"}]}
 """
 
 

@@ -1,0 +1,27 @@
+{
+  "run_id": "run_63da1737",
+  "query": "My mom's birthday is on 15th of May 2026. Remember that, and give me a calendar reminder for two weeks before and on the day.",
+  "iterations": 5,
+  "duration_s": 38.45,
+  "final_answer": "Mom's birthday is saved for May 15, 2026.",
+  "goals": [
+    {
+      "id": "g1",
+      "text": "Save the fact that mom's birthday is on May 15, 2026",
+      "done": true,
+      "attach_artifact_id": null
+    },
+    {
+      "id": "g2",
+      "text": "Create a calendar reminder for two weeks before May 15, 2026",
+      "done": true,
+      "attach_artifact_id": null
+    },
+    {
+      "id": "g3",
+      "text": "Create a calendar reminder for May 15, 2026",
+      "done": true,
+      "attach_artifact_id": null
+    }
+  ]
+}

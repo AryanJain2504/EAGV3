@@ -1,0 +1,21 @@
+{
+  "run_id": "run_cff6d28f",
+  "query": "Fetch the Wikipedia page for Claude Shannon and tell me his birth and death dates and three key contributions to information theory.",
+  "iterations": 3,
+  "duration_s": 25.01,
+  "final_answer": "Born: April 30, 1916; Died: February 24, 2001. Key contributions to information theory: founding the field of information theory with his 1948 paper 'A Mathematical Theory of Communication', introducing the bit as the fundamental unit of information, and formulating Shannon's source coding theorem.",
+  "goals": [
+    {
+      "id": "g1",
+      "text": "Fetch the Wikipedia page for Claude Shannon via fetch_url",
+      "done": true,
+      "attach_artifact_id": null
+    },
+    {
+      "id": "g2",
+      "text": "Extract his birth and death dates and three key contributions to information theory from the fetched page",
+      "done": true,
+      "attach_artifact_id": null
+    }
+  ]
+}

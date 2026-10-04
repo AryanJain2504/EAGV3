@@ -1,0 +1,39 @@
+{
+  "run_id": "run_31a0bf6e",
+  "query": "Search for Python asyncio best practices, open the top three results, and give me a short numbered list of the advice they agree on.",
+  "iterations": 7,
+  "duration_s": 64.85,
+  "final_answer": "1. Use asyncio for IO-bound and structured network code.\n2. Understand async fundamentals and use proper async patterns with the async/await syntax.",
+  "goals": [
+    {
+      "id": "g1",
+      "text": "Search for Python asyncio best practices using web search",
+      "done": true,
+      "attach_artifact_id": null
+    },
+    {
+      "id": "g2",
+      "text": "Fetch the first top search result URL",
+      "done": true,
+      "attach_artifact_id": null
+    },
+    {
+      "id": "g3",
+      "text": "Fetch the second top search result URL",
+      "done": true,
+      "attach_artifact_id": null
+    },
+    {
+      "id": "g4",
+      "text": "Fetch the third top search result URL",
+      "done": true,
+      "attach_artifact_id": null
+    },
+    {
+      "id": "g5",
+      "text": "Extract and synthesize a short numbered list of the advice all three results agree on",
+      "done": true,
+      "attach_artifact_id": null
+    }
+  ]
+}
