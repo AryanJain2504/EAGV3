@@ -1,0 +1,40 @@
+{
+  "perception": {
+    "decompose_on_empty_prior": true,
+    "same_order_verbatim": true,
+    "done_from_run_history": true,
+    "artifact_routing": true,
+    "intent_not_tools": true,
+    "relative_date_contract": true,
+    "tool_blind": true,
+    "has_examples": true,
+    "no_attach_if_indexed": true
+  },
+  "decision": {
+    "one_goal_only": true,
+    "answer_xor_toolcall": true,
+    "original_request_authoritative": true,
+    "no_head_math": true,
+    "date_capability": true,
+    "action_not_prose": true,
+    "evidence_only": true,
+    "grounding_strict": true,
+    "cite_chunk_id": true,
+    "citation_is_mandatory": true,
+    "provenance_is_not_a_citation": true,
+    "indexed_doc_not_refetched": true,
+    "artifact_handles": true,
+    "no_repeat_failed_call": true,
+    "has_examples": true
+  },
+  "memory_classifier": {
+    "entity_requirement": true,
+    "raw_fallback": true
+  },
+  "neutral": {
+    "perception.py_neutral": true,
+    "decision.py_neutral": true,
+    "memory.py_neutral": true
+  },
+  "pass": true
+}
