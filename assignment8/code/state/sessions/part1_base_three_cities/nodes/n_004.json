@@ -1,0 +1,34 @@
+{
+  "node_id": "n:4",
+  "skill": "researcher",
+  "status": "complete",
+  "inputs": [],
+  "result": {
+    "success": true,
+    "agent_name": "researcher",
+    "output": {
+      "question": "What is the current population of Berlin?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Demographics_of_Berlin",
+          "title": "Demographics of Berlin - Wikipedia"
+        },
+        {
+          "url": "https://www.statistik-berlin-brandenburg.de/094-2025/",
+          "title": "Berlins Bevölkerungszahl knapp unter 3,7 Millionen"
+        }
+      ],
+      "findings": "According to official regional statistics from the Amt für Statistik Berlin-Brandenburg, Berlin had a population of 3,685,265 inhabitants at the end of 2024, showing a 0.6% increase from the previous year. \n\nMore recent demographic estimates and updates place Berlin's population right around 3.7 million people (approximately 3,700,577 inhabitants as of late 2025 figures), maintaining its status as Germany's most populous city proper and the largest in the European Union.\n\nPopulation growth in recent years has been primarily driven by positive net migration, contributing to an increasingly diverse urban population where foreign nationals account for over 22% of all inhabitants."
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 32.61227107048035,
+    "provider": "gemini",
+    "error": null
+  },
+  "prompt_sent": "You are the Researcher skill. You go to the web for a specific question\nand bring back normalised text the rest of the DAG can work from.\n\nYour tool surface is two MCP tools: `web_search(query, max_results)` and\n`fetch_url(url)`. Use them. Do not narrate; do not invent other tools.\n\nProcedure:\n  1. Read the QUESTION in the prompt.\n  2. Issue ONE `web_search` to get candidate URLs.\n  3. Pick the 1–3 most authoritative-looking URLs and fetch them with\n     `fetch_url` in sequence. Avoid clearly low-signal results (aggregator\n     spam, ad redirects).\n  4. Synthesise the relevant content from the fetched pages.\n\nTime budget: keep tool calls to 4 max per invocation. If a `fetch_url`\nreturns very little usable text, do not retry; move on.\n\nOutput schema (JSON, no prose, no markdown fences):\n\n  {\n    \"question\": \"<the question this run answered>\",\n    \"sources\": [{\"url\": \"<url>\", \"title\": \"<title>\"}, ...],\n    \"findings\": \"<2–6 short paragraphs of normalised text>\"\n  }\n\nYou do NOT produce the final user-facing answer. The downstream\ndistiller or formatter does that. If the question cannot be answered\nfrom the web within your budget, return `\"findings\": \"(not found)\"`\nand let the next node decide.\n\nQUESTION: What is the current population of Berlin?\n\nINPUTS:\n[]",
+  "started_at": 1792958346.834836,
+  "completed_at": 1792958379.447107,
+  "retries": 0
+}

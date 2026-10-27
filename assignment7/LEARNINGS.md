@@ -1,10 +1,10 @@
 # Assignment 7 — Learning Dossier
 
-**Status:** Assignment 7 implementation and evidence are complete; the demonstration video is the only outstanding submission item.
+**Status:** Assignment 7 was submitted (27 October 2026) with the implementation and evidence complete. The demonstration video was never recorded — it was the one outstanding rubric item at submission. This dossier is now the durable handover record.
 
 **Purpose:** a durable technical record and interview preparation system for the RAG agent built in `assignment7/`. It explains the architecture, the corpus, every major failure, the decisions and tradeoffs, the evidence, the remaining defects, and how to reason about the system at a frontier-lab level.
 
-**Last updated:** 26 October 2026
+**Last updated:** 27 October 2026
 
 **Scope:** this document synthesizes the code, tests, saved traces, `ASSIGNMENT7_ENGINEERING_JOURNAL.md`, and the final SME review. The journal remains the chronology and raw incident ledger. This file is the explanation layer.
 
@@ -80,7 +80,7 @@ Use the following structure:
 ### 1.4 What this project proves
 
 - **[Observed]** The system can index 53 records and 1,625 chunks and retrieve book-specific passages with provenance.
-- **[Observed]** Q1 and Q5 demonstrate semantic recall: the exact query wording is absent from the corpus, yet relevant passages are retrieved and cited. A normalized phrase check found zero exact occurrences of the Q1 and Q5 phrases in the corpus.
+- **[Observed]** Q1 and Q5 demonstrate semantic recall: the exact query wording is absent from the corpus, yet relevant passages are retrieved and cited. A normalized phrase check found zero exact occurrences of the Q1 and Q5 phrases in the corpus. (Q1’s surviving trace is the diagnostic `3f927811`, which still cites monitoring/drift chunks without repeating the query wording; the canonical Q1 trace is lost — see §20.4.)
 - **[Observed]** Cross-run persistence works: C2 recalls a fact written by C1 and F2 retrieves chunks indexed by F1 in a fresh process.
 - **[Observed]** No-corpus controls end with `No answer was produced.` rather than a plausible unsupported answer.
 - **[Observed]** The final architecture is much smaller than the contract-layer experiment: `agent7.py` is 388 lines and `decision.py` is 439, versus roughly 1,055 and 568 at the peak.
@@ -108,11 +108,11 @@ Use the following structure:
 | Base queries A–H | Eight course queries within iteration caps | Complete; B banked |
 | Real corpus | At least 50 meaningful items | 53 records |
 | RAG behavior | Retrieval must support answers | 1,625 chunks, FAISS + metadata |
-| Five custom queries | Corpus-specific questions | Five with-corpus traces |
+| Five custom queries | Corpus-specific questions | Five with-corpus files (Q1/Q2 hold the diagnostics; canonical pair lost — §20.4) |
 | Semantic recall | At least two queries whose wording is absent from answer chunks | Q1 and Q5 |
 | No-corpus comparison | Show the answer depends on the corpus | Five no-corpus traces |
 | Documentation | README, HLD/LLD, setup, evidence | Complete |
-| Video | Short demonstration | Outstanding |
+| Video | Short demonstration | Not recorded; submitted without it |
 
 PDF-to-text conversion is preparation, not a rubric feature. The agent indexes UTF-8 text; `pdftotext` lives outside the loop.
 
@@ -528,6 +528,7 @@ The journal records the motivating observation: pure vector ordering put every R
 - Retrieved chunks include ML Systems monitoring/drift material.
 - Answer cites a monitoring passage and explains concept drift without using the query wording.
 - This is semantic recall, but the answer is compact and citation coverage is thin.
+- The surviving trace for this query is the diagnostic `3f927811`, whose third citation (`mem:60c99904`) is unrelated; the canonical trace with the cleaner single citation was lost (§20.4).
 
 **Q5 (fast serving plus later learning).**
 
@@ -766,7 +767,7 @@ is unreachable because `_final_answer` never returns that value. This is a P0 co
 
 ### 6.11 Q1 diagnostic, step by step
 
-Trace: `run 3f927811`, `evidence/rerun-20261023-011834/custom/query-01-with-corpus.md`.
+Trace: `run 3f927811`, `evidence/custom/query-01-with-corpus.md` (the rerun directory `evidence/rerun-20261023-011834/` was removed; this diagnostic now occupies the Q1 with-corpus slot — see §20.4).
 
 1. Perception creates a search goal and a final-answer goal.
 2. Decision calls `search_knowledge`.
@@ -777,9 +778,11 @@ Trace: `run 3f927811`, `evidence/rerun-20261023-011834/custom/query-01-with-corp
 7. `still_open` is empty after excluding the current goal.
 8. The run breaks.
 9. `_final_answer` returns the answer with `incomplete_reason: null`.
-10. `result_3f927811.json` records `g:7298b523` with `"done": false`.
+10. The result record showed `g:7298b523` with `"done": false`.
 
 This is not a retrieval failure. The answer is substantive. It is a state/finalization failure. The system reports success while a goal is open.
+
+**Artifact status [Unverified].** The rerun state directory that held `result_3f927811.json` was under `/private/tmp` and has been purged. The console trace survives at `evidence/custom/query-01-with-corpus.md`; the structured result file does not.
 
 ### 6.12 Q2 diagnostic, step by step
 
@@ -1680,7 +1683,7 @@ The console’s `[decision]` preview showed the start of the contributions, but 
 
 ### 10.19 Case 19 — Q1 canonical: answer without search
 
-**Evidence.** `run c407ad29`; 2 iterations; final cites `mem:5c6a9dc9`.
+**Evidence.** `run c407ad29`; 2 iterations; final answer was recorded as citing `mem:5c6a9dc9` **[Unverified — the citation cannot be re-checked]**. **Artifact status [Unverified]:** the original Q1 with-corpus trace file was overwritten by the diagnostic on 27 Oct 2026 and the canonical run is no longer recoverable from disk, git, or backups; only the run ID and this description survive.
 
 **Symptom.** The run has a query goal and an answer goal. On iteration 1, Decision answers the query goal directly from memory hits. It never calls `search_knowledge`. On iteration 2, Perception marks the query goal done and Decision repeats the answer.
 
@@ -1690,7 +1693,7 @@ The console’s `[decision]` preview showed the start of the contributions, but 
 
 ### 10.20 Case 20 — Q1 diagnostic: the final answer while the goal is open
 
-**Evidence.** `run 3f927811`; `result_3f927811.json`; `evidence/rerun-20261023-011834/custom/query-01-with-corpus.md`.
+**Evidence.** `run 3f927811`; console trace at `evidence/custom/query-01-with-corpus.md`. `result_3f927811.json` was in the purged `/private/tmp` rerun state and is gone.
 
 **Symptom.** The final answer is substantive, but the final-answer goal `g:7298b523` is `done: false`, and `incomplete_reason` is null.
 
@@ -1706,7 +1709,7 @@ The console’s `[decision]` preview showed the start of the contributions, but 
 
 ### 10.21 Case 21 — Q2: completion without search
 
-**Evidence.** Canonical `run 0d382028`; diagnostic `run 3b025ad3`; final `mem:dc2f8a45` / `mem:985bed30`.
+**Evidence.** Canonical `run 0d382028` **[Unverified — trace overwritten by the diagnostic, unrecoverable]**; diagnostic `run 3b025ad3` at `evidence/custom/query-02-with-corpus.md`, citing `mem:985bed30`, `mem:16be0f53`, `mem:a52bc36d`.
 
 **Symptom.** The query has a query goal and an answer goal. Decision answers the query goal directly from memory on iteration 1. No `search_knowledge`. Perception marks both goals done. The answer is grounded in a retrieved chunk, but the knowledge tool was never used.
 
@@ -1742,7 +1745,7 @@ The console’s `[decision]` preview showed the start of the contributions, but 
 
 ### 11.1 How to read the ledger
 
-The journal has **96 table rows** across the Session 6 and Session 7 ledgers, plus **13 appendices**. The rows are chronological and sometimes use duplicate row labels (row 1 of one ledger is not row 1 of another). For navigation, this section groups the 95 rows by theme and links them to the dossier chapters.
+The journal has **96 table rows** across the Session 6 and Session 7 ledgers, plus **13 appendices**. The rows are chronological and sometimes use duplicate row labels (row 1 of one ledger is not row 1 of another). For navigation, this section groups the 96 rows by theme and links them to the dossier chapters.
 
 The grouping is exhaustive and non-overlapping. It is a map, not a replacement for the journal; use the journal for exact row text and timestamps.
 
@@ -1929,7 +1932,7 @@ The dossier claims semantic recall, cross-run persistence, and corpus dependence
 
 The project needs to answer four different questions:
 
-1. **Did the system meet the rubric?** Corpus, queries, traces, no-corpus controls, video.
+1. **Did the system meet the rubric?** Corpus, queries, traces, no-corpus controls, video (never recorded).
 2. **Did it retrieve the right evidence?** Recall, precision, coverage.
 3. **Did it answer correctly?** Field coverage, citation support, comparison symmetry.
 4. **Is it reliable?** Variance, latency, failure modes, cost.
@@ -1950,8 +1953,8 @@ These are not the same. The evidence set answers (1) partially; (2)–(4) remain
 | F2 | `9a1d3038` | 2 | 3 | Partial | One-source answer for “across papers” |
 | G | `9993366a` | 2 | 3 | Partial | 4 of 5 papers; strained lens |
 | H | `da66a38d` | 2 | 3 | Pass | Two-sided comparison |
-| Q1 | `c407ad29` | 2 | — | Semantic pass | No `search_knowledge`; thin citation |
-| Q2 | `0d382028` | 2 | — | Grounded pass | No `search_knowledge` |
+| Q1 | `c407ad29` | 2 | — | Semantic pass | Trace file lost; no `search_knowledge`; thin citation |
+| Q2 | `0d382028` | 2 | — | Grounded pass | Trace file lost; no `search_knowledge` |
 | Q3 | `eee78194` | 3 | — | Pass | Extra artifact iteration |
 | Q4 | `165cb91f` | 2 | — | Fail | One-sided comparison |
 | Q5 | `35b1bb12` | 2 | — | Semantic pass | One run |
@@ -1992,7 +1995,7 @@ A run can score 2 on efficiency and 0 on completeness. Report both.
 
 ### 13.5 Custom-query evaluation notes
 
-- **Q1:** Semantic recall works (query phrase absent; monitoring answer). But the answer is one sentence and cites one chunk; the diagnostic rerun exposes the finalization and citation bugs.
+- **Q1:** Semantic recall works (query phrase absent; monitoring answer). But the answer is one sentence, the surviving trace is the diagnostic (`3f927811`) that also exposes the finalization and citation bugs, and the canonical Q1 trace (`c407ad29`) was lost (§20.4).
 - **Q2:** Grounded in a real chunk; no search call. The no-corpus control produces no answer. The workflow is weaker than the rubric’s retrieval intent.
 - **Q3:** Good conceptual answer; the 16 KB artifact is rendered as search hits. One extra iteration.
 - **Q4:** Clear failure. The answer is ML-only. The prompt conflict is the likely cause.
@@ -2065,7 +2068,7 @@ The model temperature is 0 for Decision/Perception, but provider nondeterminism,
 
 | Area | Score | Reason |
 |---|---|---|
-| Rubric completeness | 9/10 | Video missing |
+| Rubric completeness | 9/10 | Video not recorded; submitted without it |
 | Corpus/provenance | 9/10 | 53 records, page ranges |
 | RAG path | 7/10 | Works; Q1/Q2 bypass search |
 | Retrieval quality | 5/10 | No labelled eval; descriptor limit |
@@ -2321,7 +2324,7 @@ The system is appropriate for a local, trusted-corpus demo. It is not appropriat
 5. Add a global context budget.
 6. Add SSRF/artifact/metadata validation.
 7. Rerun Q1/Q2/Q4 with fixes; do 5 repeats.
-8. Record the demo video.
+8. Record the demo video (still not done; the assignment was submitted without it).
 
 ### 16.2 One month
 
@@ -2400,7 +2403,7 @@ The system is appropriate for a local, trusted-corpus demo. It is not appropriat
 2. **No threshold because ranges overlap.** Measurement over intuition.
 3. **Finalization bug.** Auditing your own success criteria.
 
-**Metrics to cite:** 53 records, 1,625 chunks, 71 test cases, 10 base + 10 custom traces, 5 no-corpus controls, 2 semantic queries.
+**Metrics to cite:** 53 records, 1,625 chunks, 71 test cases, 10 base + 10 custom trace files, 5 no-corpus controls, 2 semantic queries. (Q1/Q2 with-corpus files hold the diagnostics; canonical pair lost — §20.4.)
 
 **Whiteboard:** draw the loop, the two retrieval surfaces, and the information available at each role. Then mark where Q1/Q2/Q4 fail.
 
@@ -2449,7 +2452,7 @@ The system is appropriate for a local, trusted-corpus demo. It is not appropriat
 2. **Stale artifact scoping.** Persistent memory can attach another run’s bytes.
 3. **Contract tests + safe gate.** 71 cases, but the full suite is unsafe because a legacy test deletes the corpus.
 
-**Metrics to cite:** 12 tools, 17 Python files, 388-line orchestrator, 71 test cases, 10 base + 10 custom traces.
+**Metrics to cite:** 12 tools, 17 Python files, 388-line orchestrator, 71 test cases, 10 base + 10 custom trace files (Q1/Q2 canonical pair lost — §20.4).
 
 **Whiteboard:** sequence diagram of `agent7.run`: memory read → Perception → attach → Decision → Action → record. Mark the state directory and artifact store.
 
@@ -2468,77 +2471,91 @@ The system is appropriate for a local, trusted-corpus demo. It is not appropriat
 
 ## 18. STAR stories
 
+Written first person for delivery. Each ends with a line worth saying aloud.
+
 ### 18.1 Wrong artifact and the contract layer
 
-**Situation.** E/Q1 stalled: a goal about Transformer contributions was handed a 25,523-byte PostgreSQL artifact. Decision refused, correctly, because the bytes did not answer the goal. The surrounding contract layer converted the refusal into a self-describing non-answer and looped.
+**Situation.** I was debugging E/Q1: a goal asking for Transformer contributions had been handed a 25,523-byte PostgreSQL artifact. Decision refused it, correctly, because those bytes did not answer the goal. The contract layer around it converted that refusal into a self-describing non-answer, and the run looped.
 
-**Task.** Find the real failure and remove the machinery that hid it.
+**Task.** I had to find the real failure and remove the machinery that was hiding it.
 
-**Action.** Reconstructed the exact prompt. Confirmed the artifact was misrouted by Perception. Deleted the per-goal evidence modes, citation gate, and reconciliation pass. Made goal attachment explicit and scoped to the current run. Re-ran the trace with readable evidence.
+**Action.** I reconstructed the exact prompt Decision received and confirmed the artifact had been misrouted upstream in Perception. I deleted the per-goal evidence modes, the citation gate, and the reconciliation pass, made goal attachment explicit and scoped to the current run, and re-ran the trace with readable evidence.
 
-**Result.** The loop became 388 lines; the failure became visible; the system answered from chunk IDs rather than raw bytes. The contract tests were rewritten around factual contracts.
+**Result.** The loop dropped to 388 lines, the failure became visible instead of generic, and the system answered from chunk IDs rather than raw bytes. I rewrote the contract tests around factual contracts rather than the deleted sub-schema.
 
 **Lesson.** A guardrail that replaces a specific failure with a generic one is worse than no guardrail.
 
+**Line:** “The guardrail was hiding the bug it was built to catch.”
+
 ### 18.2 Stale artifact across runs
 
-**Situation.** Memory is persistent. A goal could attach an artifact handle produced by an earlier run. The trace looked valid because the handle existed and the bytes were readable.
+**Situation.** I realized memory is persistent, so a goal could attach an artifact handle produced by an earlier run. The trace looked valid — the handle existed and the bytes were readable — which is exactly why it was dangerous.
 
-**Task.** Prevent cross-run evidence contamination without letting the orchestrator choose evidence.
+**Task.** I needed to stop cross-run evidence contamination without letting the orchestrator choose evidence.
 
-**Action.** Added `_current_run_artifacts(history)` and dropped handles not produced by this run. Perception still chooses the handle; the orchestrator only validates provenance.
+**Action.** I added `_current_run_artifacts(history)` and drop handles not produced by this run. Perception still chooses the handle; the orchestrator only validates provenance.
 
-**Result.** Cross-run bytes are rejected with a trace line; the planner retains ownership of relevance.
+**Result.** Cross-run bytes are rejected with a trace line, and the planner retains ownership of relevance.
 
-**Lesson.** Scope evidence by provenance, not just existence. A valid handle is not a valid source.
+**Lesson.** I scope evidence by provenance, not just existence. A valid handle is not a valid source.
+
+**Line:** “Provenance is not relevance, but it is the first gate.”
 
 ### 18.3 Query pollution and the fallback write
 
-**Situation.** A user query was stored as a `fact` and embedded. It scored maximally against itself, outranked the real corpus, and made Decision answer from the question echo.
+**Situation.** I found that a user query had been stored as a `fact` and embedded. It scored maximally against itself, outranked the real corpus, and made Decision answer with the question's own echo.
 
-**Task.** Close the class, not just the row.
+**Task.** I wanted to close the class of bug, not just the row.
 
-**Action.** `search_knowledge` returns only items with `value.chunk`. `_fallback_remember` writes `scratchpad` with no embedding. `memory.remember` prefers the classifier, but failure never promotes unjudged text to fact. Added a regression test that the query echo cannot enter the citable set.
+**Action.** I made `search_knowledge` return only items with `value.chunk`, changed `_fallback_remember` to write `scratchpad` with no embedding, and kept the classifier as the only path to `fact` — failure never promotes unjudged text. Then I wrote a regression test asserting the query echo cannot enter the citable set; it failed first, which is how I found a third bug in the unfiltered fallback.
 
 **Result.** Stored questions are recorded for audit but cannot pose as corpus evidence.
 
-**Lesson.** A fallback path must be safe by default. “Unclassified” means scratchpad, not fact.
+**Lesson.** I treat a fallback path as unsafe by default. “Unclassified” means scratchpad, not fact.
+
+**Line:** “The path that exists because classification failed should never be the path that asserts a fact.”
 
 ### 18.4 The final answer that outran its goal
 
-**Situation.** Q1 diagnostic returned a substantive answer while the final-answer goal was `done: false` and `incomplete_reason` was null.
+**Situation.** My Q1 diagnostic returned a substantive final answer while the final-answer goal was `done: false` and `incomplete_reason` was null.
 
-**Task.** Explain how a run can report success while a goal is open.
+**Task.** I had to explain how a run can report success while a goal is still open.
 
-**Action.** Traced the loop: Decision answers the last open goal; `still_open` excludes it; the run breaks; `_final_answer` returns the last answer without inspecting goals. Confirmed the `goals-open` branch is unreachable.
+**Action.** I traced the loop line by line: Decision answers the last open goal, `still_open` excludes it because it is the current goal, the run breaks, and `_final_answer` returns the last answer without ever inspecting goals. I confirmed the `goals-open` branch is unreachable — the value that would signal the problem is never produced.
 
-**Result.** Documented a P0 state bug and a regression test design: no answer while any goal is open.
+**Result.** I documented a P0 state bug and the regression test design: no answer may be returned while any goal is open.
 
-**Lesson.** Completion and answer generation are different state machines. The finalizer must know both.
+**Lesson.** Completion and answer generation are two different state machines; the finalizer has to know both.
+
+**Line:** “`incomplete_reason: null` does not mean every goal finished — I had to read the goals array to know.”
 
 ### 18.5 RRF and title dilution
 
-**Situation.** Dense-only retrieval put every ReAct chunk above the CoT chunk even when the query named the CoT paper.
+**Situation.** I kept seeing dense-only retrieval put every ReAct chunk above the Chain-of-Thought chunk, even when the query named the CoT paper, because scraped navigation text diluted the title terms.
 
-**Task.** Improve ranking without hand-tuned score normalization.
+**Task.** I wanted better ranking without hand-tuned score normalization between two different scoring functions.
 
-**Action.** Added keyword retrieval with a two-token floor and fused dense/keyword rankings with RRF (`1/(60+rank)`). Read all fact candidates to avoid action-log crowding.
+**Action.** I added keyword retrieval with a two-token floor and fused the dense and keyword rankings with reciprocal rank fusion (`1/(60+rank)`), over-fetching fact candidates so action logs could not crowd out chunks.
 
-**Result.** Title-specific chunks can reach the top-k; the retrieval tool is more robust to scraped navigation text.
+**Result.** Title-specific chunks reach the top-k, and the tool is robust to scraped navigation text without a tunable weight.
 
-**Lesson.** Rank fusion is often better than score calibration when the underlying scores are not comparable.
+**Lesson.** I prefer rank fusion to score calibration when the underlying scores are not comparable.
+
+**Line:** “The scores were never on the same scale, so I fused the ranks instead.”
 
 ### 18.6 No-corpus controls
 
-**Situation.** The rubric requires a no-corpus comparison. Removing the corpus is not the same as removing it from the prompt.
+**Situation.** I had to satisfy a rubric requirement for a no-corpus comparison, and I knew that removing the corpus is not the same as removing it from the prompt.
 
-**Task.** Make the corpus genuinely unavailable and see whether the agent fabricates.
+**Task.** I needed the corpus genuinely unavailable so I could see whether the agent fabricates.
 
-**Action.** Parked `sandbox/corpus` and `sandbox/papers`, used a fresh empty state per query, bounded the run at six iterations, and restored the corpus in a trap.
+**Action.** I parked `sandbox/corpus` and `sandbox/papers`, used a fresh empty state per query, bounded each run at six iterations, and restored the corpus in a trap so a failure could not leave the tree broken.
 
 **Result.** All five controls ended with `No answer was produced.` The agent did not invent an answer.
 
-**Lesson.** Honest failure is a feature. A negative control is only meaningful if the absence is real.
+**Lesson.** Honest failure is a feature, and a negative control only means something if the absence is real.
+
+**Line:** “A no-answer is the proof; a plausible answer would have been the bug.”
 
 ---
 
@@ -2658,11 +2675,12 @@ The journal is allowed to contain superseded rows. The README/ARCHITECTURE/AGENT
 - `evidence/base/query-a.md` … `query-h.md`.
 - `evidence/custom/query-0N-with-corpus.md`.
 - `evidence/custom/query-0N-without-corpus.md`.
-- `evidence/rerun-20261023-011834/` diagnostic rerun.
 - `$EAGV3_STATE_DIR/history_<run_id>.jsonl`.
 - `$EAGV3_STATE_DIR/result_<run_id>.json`.
 
 The markdown trace’s first line maps to the state trace. Preserve that mapping.
+
+**Evidence loss [Observed, 27 Oct 2026].** `evidence/rerun-20261023-011834/` was deleted, and `evidence/custom/query-01-with-corpus.md` / `query-02-with-corpus.md` were overwritten with the diagnostic runs `3f927811` / `3b025ad3`. The canonical Q1/Q2 traces (`c407ad29`, `0d382028`) survive nowhere: not on disk, not in git history, not in `/private/tmp` backups. The rerun state directory under `/private/tmp` (which held `result_3f927811.json` and `result_3b025ad3.json`) was also purged. Consequences: the Q1/Q2 rows in §13 describe runs whose artifacts are gone, and the casebook entries in §10.19/§10.21 are marked accordingly. Assignment 7 was already submitted; do not backfill evidence.
 
 ### 20.5 What to update when the code changes
 
@@ -2728,11 +2746,12 @@ The markdown trace’s first line maps to the state trace. Preserve that mapping
 1. `evidence/base/query-c1.md` → `query-c2.md` — persistence.
 2. `evidence/base/query-e.md` — index → search → answer.
 3. `evidence/base/query-h.md` — two-sided comparison.
-4. `evidence/custom/query-01-with-corpus.md` — semantic recall.
+4. `evidence/custom/query-05-with-corpus.md` — semantic recall (Q5, cleanest example).
 5. `evidence/custom/query-04-with-corpus.md` — one-sided failure.
 6. `evidence/custom/query-02-without-corpus.md` — honest no-answer.
-7. `evidence/rerun-20261023-011834/custom/query-01-with-corpus.md` — finalization bug.
-8. `result_3f927811.json` — the state evidence.
+7. `evidence/custom/query-01-with-corpus.md` — finalization bug (diagnostic `3f927811`; this file replaced the canonical Q1 trace, so it doubles as the Q1 with-corpus slot).
+8. `evidence/custom/query-02-with-corpus.md` — grounded no-search answer (diagnostic `3b025ad3`; likewise replaced the canonical Q2 trace `0d382028`).
+9. State evidence for `result_3f927811.json` and `result_3b025ad3.json` — purged with the `/private/tmp` rerun state; not available.
 
 ---
 
@@ -2751,9 +2770,10 @@ The markdown trace’s first line maps to the state trace. Preserve that mapping
 | Chunk size / overlap | 400 / 80 words |
 | Embedding dimension | 768 |
 | Base traces | 10 |
-| Custom with-corpus | 5 |
+| Custom with-corpus files | 5 (Q1/Q2 slots now hold the diagnostics) |
 | Custom no-corpus | 5 |
-| Final diagnostic traces | 2 |
+| Final diagnostic traces | 2 (at `evidence/custom/query-01/02-with-corpus.md`) |
+| Canonical Q1/Q2 traces | Lost |
 | Contract test functions | 52 |
 | Contract test cases | 71 |
 | MCP tools | 12 |
@@ -2788,10 +2808,14 @@ uv run python validate_prompts.py
 
 ### Inspect a result
 
+The `/private/tmp/a7_rerun.YKeHGz` state directory that held the diagnostic
+`result_*.json` files has been purged, so those `jq` examples no longer run.
+Against a live state directory the commands are:
+
 ```bash
-state="/private/tmp/a7_rerun.YKeHGz"
+state="$EAGV3_STATE_DIR"
 jq '{run_id, query, incomplete_reason, goals, final_answer}' \
-  "$state/result_3f927811.json"
+  "$state/result_<run_id>.json"
 ```
 
 ### Check goal state
@@ -2801,20 +2825,24 @@ jq -r '[.run_id,
         (.incomplete_reason // "null"),
         ([.goals[].done] | all),
         (.final_answer | length)] | @tsv' \
-  "$state/result_3f927811.json"
+  "$state/result_<run_id>.json"
 ```
 
-Expected Q1 diagnostic: `3f927811 null false 302`; the key is `false`.
+Historical expectation for the Q1 diagnostic: `3f927811 null false 302`; the
+key is `false`.
 
 ### Check citation IDs
 
 ```bash
 rg -o 'mem:[0-9a-f]+' evidence/custom/query-01-with-corpus.md | sort -u
-jq -r --arg id 'mem:5c6a9dc9' '
+jq -r --arg id 'mem:d471c978' '
   .[] | select(.id == $id) |
   [.source, .value.title, .value.page_start, .value.page_end] | @tsv
 ' "$state/memory.json"
 ```
+
+(`$state/memory.json` must be a state directory that still contains the
+records; the diagnostic rerun state is gone.)
 
 ### Check semantic phrase absence
 
@@ -2923,20 +2951,24 @@ Limitation: no Perception events. Goal evolution is in the console and final `re
 
 ## Appendix F — Final audit checklist
 
-- [ ] `LEARNINGS.md` covers every code file and all 96 journal rows.
-- [ ] Every base/custom trace is linked.
-- [ ] A/F2/G/Q4 caveats are explicit.
-- [ ] Q1/Q2 diagnostic IDs are exact.
-- [ ] B is labeled banked A6.
-- [ ] 53/1,625/71/12 numbers match current artifacts.
-- [ ] No unsupported “production-ready” claim.
-- [ ] Security gaps are listed.
-- [ ] Decision ledger has 30 rows.
-- [ ] Casebook has 22 cases.
-- [ ] STAR stories are first person.
-- [ ] Role lenses are distinct.
-- [ ] Drills file exists and matches this dossier.
-- [ ] Demo video recorded or clearly marked outstanding.
+Audited 27 Oct 2026 against the live tree, git history, and evidence files.
+
+- [x] `LEARNINGS.md` covers every code file and all 96 journal rows.
+- [x] Every base/custom trace is linked. (Exception recorded in §20.4: the canonical Q1/Q2 trace files were overwritten and are unrecoverable.)
+- [x] A/F2/G/Q4 caveats are explicit.
+- [x] Q1/Q2 diagnostic IDs are exact (`3f927811`, `3b025ad3` — both confirmed in `evidence/custom/`).
+- [x] B is labeled banked A6.
+- [x] 53/1,625/71/12 numbers match current artifacts.
+- [x] No unsupported “production-ready” claim.
+- [x] Security gaps are listed.
+- [x] Decision ledger has 30 rows.
+- [x] Casebook has 22 cases.
+- [x] STAR stories are first person.
+- [x] Role lenses are distinct.
+- [x] Drills file exists and matches this dossier (30 questions, 8 STAR cues, 4 whiteboards, 3 mock rounds, 6 drills).
+- [x] Demo video recorded or clearly marked outstanding. (Clearly marked outstanding; the assignment was submitted without it.)
+
+**Audit findings this pass:** (1) journal row count corrected 95 → 96; (2) canonical Q1/Q2 traces (`c407ad29`, `0d382028`) lost — annotated throughout, never backfilled; (3) `evidence/rerun-20261023-011834/` and the `/private/tmp` rerun state removed — all links to them rewritten; (4) safe gate re-run: 71 passed, PoP PASSED.
 
 ---
 

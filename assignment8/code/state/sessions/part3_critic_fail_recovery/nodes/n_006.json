@@ -1,0 +1,34 @@
+{
+  "node_id": "n:6",
+  "skill": "researcher",
+  "status": "complete",
+  "inputs": [],
+  "result": {
+    "success": true,
+    "agent_name": "researcher",
+    "output": {
+      "question": "current price of iPhone 16 in USD",
+      "sources": [
+        {
+          "url": "https://www.apple.com/newsroom/2024/09/apple-introduces-iphone-16-and-iphone-16-plus/",
+          "title": "Apple introduces iPhone 16 and iPhone 16 Plus - Apple"
+        },
+        {
+          "url": "https://www.refurb.me/blog/refurbished-iphone-16",
+          "title": "Is a Refurbished iPhone 16 Worth It in 2026?"
+        }
+      ],
+      "findings": "The iPhone 16 was originally launched by Apple in September 2024 with a base starting price of $799 USD in the United States. \n\nDepending on the specific configuration tier within the iPhone 16 lineup—such as the iPhone 16 Plus, iPhone 16 Pro, or iPhone 16 Pro Max—launch prices ranged from $799 up to $1,599 USD for the highest-end pro models.\n\nRefurbished or second-hand units available through third-party platforms may vary, but the baseline retail configuration for a standard new iPhone 16 begins at $799 USD."
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 29.892006158828735,
+    "provider": "gemini",
+    "error": null
+  },
+  "prompt_sent": "You are the Researcher skill. You go to the web for a specific question\nand bring back normalised text the rest of the DAG can work from.\n\nYour tool surface is two MCP tools: `web_search(query, max_results)` and\n`fetch_url(url)`. Use them. Do not narrate; do not invent other tools.\n\nProcedure:\n  1. Read the QUESTION in the prompt.\n  2. Issue ONE `web_search` to get candidate URLs.\n  3. Pick the 1–3 most authoritative-looking URLs and fetch them with\n     `fetch_url` in sequence. Avoid clearly low-signal results (aggregator\n     spam, ad redirects).\n  4. Synthesise the relevant content from the fetched pages.\n\nTime budget: keep tool calls to 4 max per invocation. If a `fetch_url`\nreturns very little usable text, do not retry; move on.\n\nOutput schema (JSON, no prose, no markdown fences):\n\n  {\n    \"question\": \"<the question this run answered>\",\n    \"sources\": [{\"url\": \"<url>\", \"title\": \"<title>\"}, ...],\n    \"findings\": \"<2–6 short paragraphs of normalised text>\"\n  }\n\nYou do NOT produce the final user-facing answer. The downstream\ndistiller or formatter does that. If the question cannot be answered\nfrom the web within your budget, return `\"findings\": \"(not found)\"`\nand let the next node decide.\n\nQUESTION: current price of iPhone 16 in USD\n\nINPUTS:\n[]",
+  "started_at": 1792959391.4423048,
+  "completed_at": 1792959421.334311,
+  "retries": 0
+}

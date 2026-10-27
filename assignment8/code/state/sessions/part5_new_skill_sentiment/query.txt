@@ -1,0 +1,4 @@
+Classify the sentiment of each Galaxy Buds review as positive, neutral, or negative, then summarize the overall reception:
+1. Amazing sound quality and the noise cancelling is best in class.
+2. They hurt my ears after an hour and the battery dies too fast.
+3. Okay for the price, nothing special but gets the job done.

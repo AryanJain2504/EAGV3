@@ -1,0 +1,32 @@
+{
+  "node_id": "n:14",
+  "skill": "sandbox_executor",
+  "status": "complete",
+  "inputs": [
+    "n:12"
+  ],
+  "result": {
+    "success": true,
+    "agent_name": "sandbox_executor",
+    "output": {
+      "exit_code": 0,
+      "stdout": "Annual Population Growth Rates:\n- Kinshasa: 5.13%\n- Lagos: 2.48%\n- Cairo: 1.07%\n\nFastest growing city: Kinshasa (5.13%)\n",
+      "stdout_truncated": false,
+      "stderr": "",
+      "stderr_truncated": false,
+      "files_written": [],
+      "timed_out": false,
+      "cwd": "/var/folders/y5/31c9cwdd5bs1phy9h7tsjl0w0000gn/T/s8sandbox-4hiltw1q"
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 0.0509791374206543,
+    "provider": "",
+    "error": null
+  },
+  "prompt_sent": "You are the SandboxExecutor skill. You exist to receive Python code\nemitted by an upstream Coder node and run it in a subprocess sandbox.\n\nThis skill almost never sees the LLM: the orchestrator calls\n`sandbox.run_python(code)` directly and packages the result into the\nAgentResult. This file is here so the catalogue listing is complete and\nso a future iteration can extend the skill with LLM-level post-checks.\n\nWhen invoked through the LLM path (only used for post-mortem\nexplanations), you receive `result` in INPUTS — the stdout / stderr /\nexit-code dict the sandbox returned. Your job is to describe what\nhappened:\n\n  {\n    \"summary\": \"<one line — exit code, whether it timed out, what was printed>\"\n  }\n\nYou make no other tool calls. You do not re-execute the code.\n\nMEMORY HITS (1 from FAISS):\n  - [scratchpad] Current populations and growth rates for Lagos, Cairo, and Kinshasa\n      source: user_query\n      raw: For Lagos, Cairo, and Kinshasa, find current populations and growth rates and tell me which is growing fastest.\n\nINPUTS:\n[\n  {\n    \"id\": \"n:12\",\n    \"kind\": \"upstream\",\n    \"skill\": \"coder\",\n    \"output\": {\n      \"code\": \"data = {\\n    'Lagos': 2.48,\\n    'Cairo': 1.07,\\n    'Kinshasa': 5.13\\n}\\n\\nsorted_cities = sorted(data.items(), key=lambda x: x[1], reverse=True)\\n\\nprint('Annual Population Growth Rates:')\\nfor city, rate in sorted_cities:\\n    print(f'- {city}: {rate:.2f}%')\\n\\nprint(f'\\\\nFastest growing city: {sorted_cities[0][0]} ({sorted_cities[0][1]:.2f}%)')\",\n      \"rationale\": \"Compare annual growth rates of Lagos, Cairo, and Kinshasa and rank them to find the fastest growing.\"\n    }\n  }\n]",
+  "started_at": 1792958973.6583629,
+  "completed_at": 1792958973.709342,
+  "retries": 0
+}

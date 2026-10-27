@@ -1,0 +1,32 @@
+{
+  "node_id": "n:7",
+  "skill": "sandbox_executor",
+  "status": "complete",
+  "inputs": [
+    "n:5"
+  ],
+  "result": {
+    "success": true,
+    "agent_name": "sandbox_executor",
+    "output": {
+      "exit_code": 0,
+      "stdout": "iPhone 16: Price = $799.00, Rating = 4.0/5.0, Warranty = 1 year\nSamsung Galaxy S25: Price = $799.00, Rating = 4.0/5.0, Warranty = 1 year\nGoogle Pixel 10: Price = $799.00, Rating = 4.0/5.0, Warranty = 1 year\n\nComparison conclusion: All three phones share the exact same starting price ($799.00), standard manufacturer warranty (1 year), and generally positive reviews/ratings, making them tied in raw value based on available metrics.\n",
+      "stdout_truncated": false,
+      "stderr": "",
+      "stderr_truncated": false,
+      "files_written": [],
+      "timed_out": false,
+      "cwd": "/var/folders/y5/31c9cwdd5bs1phy9h7tsjl0w0000gn/T/s8sandbox-vfa2aql4"
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 0.0531771183013916,
+    "provider": "",
+    "error": null
+  },
+  "prompt_sent": "You are the SandboxExecutor skill. You exist to receive Python code\nemitted by an upstream Coder node and run it in a subprocess sandbox.\n\nThis skill almost never sees the LLM: the orchestrator calls\n`sandbox.run_python(code)` directly and packages the result into the\nAgentResult. This file is here so the catalogue listing is complete and\nso a future iteration can extend the skill with LLM-level post-checks.\n\nWhen invoked through the LLM path (only used for post-mortem\nexplanations), you receive `result` in INPUTS — the stdout / stderr /\nexit-code dict the sandbox returned. Your job is to describe what\nhappened:\n\n  {\n    \"summary\": \"<one line — exit code, whether it timed out, what was printed>\"\n  }\n\nYou make no other tool calls. You do not re-execute the code.\n\nINPUTS:\n[\n  {\n    \"id\": \"n:5\",\n    \"kind\": \"upstream\",\n    \"skill\": \"coder\",\n    \"output\": {\n      \"code\": \"phones = [\\n    {\\\"name\\\": \\\"iPhone 16\\\", \\\"price\\\": 799.0, \\\"rating\\\": 4.0, \\\"warranty\\\": 1},\\n    {\\\"name\\\": \\\"Samsung Galaxy S25\\\", \\\"price\\\": 799.0, \\\"rating\\\": 4.0, \\\"warranty\\\": 1},\\n    {\\\"name\\\": \\\"Google Pixel 10\\\", \\\"price\\\": 799.0, \\\"rating\\\": 4.0, \\\"warranty\\\": 1}\\n]\\n\\nfor p in phones:\\n    print(f\\\"{p['name']}: Price = ${p['price']:.2f}, Rating = {p['rating']}/5.0, Warranty = {p['warranty']} year\\\")\\n\\nprint(\\\"\\\\nComparison conclusion: All three phones share the exact same starting price ($799.00), standard manufacturer warranty (1 year), and generally positive reviews/ratings, making them tied in raw value based on available metrics.\\\")\",\n      \"rationale\": \"Compare prices, ratings, and warranties of the three phones\"\n    }\n  }\n]",
+  "started_at": 1792959096.358207,
+  "completed_at": 1792959096.411384,
+  "retries": 0
+}

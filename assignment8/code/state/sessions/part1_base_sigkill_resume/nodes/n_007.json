@@ -1,0 +1,32 @@
+{
+  "node_id": "n:7",
+  "skill": "sandbox_executor",
+  "status": "failed",
+  "inputs": [
+    "n:5"
+  ],
+  "result": {
+    "success": false,
+    "agent_name": "sandbox_executor",
+    "output": {
+      "exit_code": 1,
+      "stdout": "Normalized definition used: City-proper/urban agglomeration estimates as provided\nKinshasa: Population ~21.85M (Metro: 21.85M), Growth Rate: 5.13%\nLagos: Population ~15.0M (Metro: 21.0M), Growth Rate: 2.48%\nCairo: Population ~10.12M (Metro: 22.6M), Growth Rate: 1.99%\n",
+      "stdout_truncated": false,
+      "stderr": "Traceback (most recent call last):\n  File \"/var/folders/y5/31c9cwdd5bs1phy9h7tsjl0w0000gn/T/s8sandbox-1q6hldjc/main.py\", line 12, in <module>\n    print(f'Fastest growing city: {fastest[0]} at {fastest[1][1][\"growth_rate\"]}% annually')\n                                                   ~~~~~~~~~~^^^\nKeyError: 1\n",
+      "stderr_truncated": false,
+      "files_written": [],
+      "timed_out": false,
+      "cwd": "/var/folders/y5/31c9cwdd5bs1phy9h7tsjl0w0000gn/T/s8sandbox-1q6hldjc"
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 0.060914039611816406,
+    "provider": "",
+    "error": null
+  },
+  "prompt_sent": "You are the SandboxExecutor skill. You exist to receive Python code\nemitted by an upstream Coder node and run it in a subprocess sandbox.\n\nThis skill almost never sees the LLM: the orchestrator calls\n`sandbox.run_python(code)` directly and packages the result into the\nAgentResult. This file is here so the catalogue listing is complete and\nso a future iteration can extend the skill with LLM-level post-checks.\n\nWhen invoked through the LLM path (only used for post-mortem\nexplanations), you receive `result` in INPUTS — the stdout / stderr /\nexit-code dict the sandbox returned. Your job is to describe what\nhappened:\n\n  {\n    \"summary\": \"<one line — exit code, whether it timed out, what was printed>\"\n  }\n\nYou make no other tool calls. You do not re-execute the code.\n\nMEMORY HITS (1 from FAISS):\n  - [scratchpad] Current populations and growth rates for Lagos, Cairo, and Kinshasa\n      source: user_query\n      raw: For Lagos, Cairo, and Kinshasa, find current populations and growth rates and tell me which is growing fastest.\n\nINPUTS:\n[\n  {\n    \"id\": \"n:5\",\n    \"kind\": \"upstream\",\n    \"skill\": \"coder\",\n    \"output\": {\n      \"code\": \"cities = {\\n    'Lagos': {'pop_city': 15.0, 'pop_metro': 21.0, 'growth_rate': 2.48},\\n    'Cairo': {'pop_city': 10.12, 'pop_metro': 22.6, 'growth_rate': 1.99},\\n    'Kinshasa': {'pop_city': 21.85, 'pop_metro': 21.85, 'growth_rate': 5.13}\\n}\\n\\nprint('Normalized definition used: City-proper/urban agglomeration estimates as provided')\\nfor name, data in sorted(cities.items(), key=lambda x: x[1]['growth_rate'], reverse=True):\\n    print(f\\\"{name}: Population ~{data['pop_city']}M (Metro: {data['pop_metro']}M), Growth Rate: {data['growth_rate']}%\\\")\\n\\nfastest = max(cities.items(), key=lambda x: x[1]['growth_rate'])\\nprint(f'Fastest growing city: {fastest[0]} at {fastest[1][1][\\\"growth_rate\\\"]}% annually')\",\n      \"rationale\": \"Extract population and growth rates for Lagos, Cairo, and Kinshasa, and identify the fastest-growing city.\"\n    }\n  }\n]",
+  "started_at": 1792958913.357189,
+  "completed_at": 1792958913.418103,
+  "retries": 0
+}

@@ -1,0 +1,34 @@
+{
+  "node_id": "n:2",
+  "skill": "researcher",
+  "status": "complete",
+  "inputs": [],
+  "result": {
+    "success": true,
+    "agent_name": "researcher",
+    "output": {
+      "question": "What is the current population of London?",
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/London",
+          "title": "London - Wikipedia"
+        },
+        {
+          "url": "https://worldpopulationreview.com/cities/united-kingdom/london",
+          "title": "London Population 2026"
+        }
+      ],
+      "findings": "The current population of London is estimated to be approximately 9.14 million to 9.19 million people.\n\nAccording to recent projections and data sources, the population stands at roughly 9.14 million for 2025, with estimates growing towards approximately 9.18 million to 9.19 million for 2026.\n\nPopulation figures can vary depending on whether metrics measure Greater London proper or the broader metropolitan urban area, but official estimates generally place Greater London's population just above 9.1 million inhabitants."
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 40.556596994400024,
+    "provider": "gemini",
+    "error": null
+  },
+  "prompt_sent": "You are the Researcher skill. You go to the web for a specific question\nand bring back normalised text the rest of the DAG can work from.\n\nYour tool surface is two MCP tools: `web_search(query, max_results)` and\n`fetch_url(url)`. Use them. Do not narrate; do not invent other tools.\n\nProcedure:\n  1. Read the QUESTION in the prompt.\n  2. Issue ONE `web_search` to get candidate URLs.\n  3. Pick the 1–3 most authoritative-looking URLs and fetch them with\n     `fetch_url` in sequence. Avoid clearly low-signal results (aggregator\n     spam, ad redirects).\n  4. Synthesise the relevant content from the fetched pages.\n\nTime budget: keep tool calls to 4 max per invocation. If a `fetch_url`\nreturns very little usable text, do not retry; move on.\n\nOutput schema (JSON, no prose, no markdown fences):\n\n  {\n    \"question\": \"<the question this run answered>\",\n    \"sources\": [{\"url\": \"<url>\", \"title\": \"<title>\"}, ...],\n    \"findings\": \"<2–6 short paragraphs of normalised text>\"\n  }\n\nYou do NOT produce the final user-facing answer. The downstream\ndistiller or formatter does that. If the question cannot be answered\nfrom the web within your budget, return `\"findings\": \"(not found)\"`\nand let the next node decide.\n\nQUESTION: What is the current population of London?\n\nINPUTS:\n[]",
+  "started_at": 1792958338.88927,
+  "completed_at": 1792958379.445867,
+  "retries": 0
+}

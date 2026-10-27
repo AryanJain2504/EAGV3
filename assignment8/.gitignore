@@ -1,0 +1,47 @@
+# Secrets — NEVER commit
+.env
+.env.local
+
+# Local runtime state — ignore scratch sessions, whitelist only the 5 rubric evidence sessions
+code/state/sessions/*
+!code/state/sessions/.gitkeep
+# Production-grade semantic session folders
+!code/state/sessions/part1_base_hello/
+!code/state/sessions/part1_base_shannon/
+!code/state/sessions/part1_base_three_cities/
+!code/state/sessions/part1_base_graceful_fail/
+!code/state/sessions/part1_base_sigkill_resume/
+!code/state/sessions/part2_parallel_fanout_phones/
+!code/state/sessions/part3_critic_pass/
+!code/state/sessions/part3_critic_fail_recovery/
+!code/state/sessions/part5_new_skill_sentiment/
+
+# Legacy ID symlinks
+!code/state/sessions/s8-afb7dc9b
+!code/state/sessions/s8-3968623e
+!code/state/sessions/s8-0a9d2171
+!code/state/sessions/s8-246960ad
+!code/state/sessions/s8-5c5d72a6
+!code/state/sessions/s8-4d752709
+!code/state/sessions/s8-826cd93e
+!code/state/sessions/s8-9d227709
+!code/state/sessions/s8-ee1437f7
+code/sandbox/*.txt
+code/state/backups/
+code/state/artifacts/*
+!code/state/artifacts/.gitkeep
+code/.venv/
+gateway/.venv/
+gateway/*.db
+gateway/usage.json
+
+# Build / cache artifacts
+**/__pycache__/
+**/*.pyc
+**/uv.lock
+**/.pytest_cache/
+
+# Editors
+.vscode/
+.idea/
+.DS_Store

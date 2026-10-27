@@ -1,0 +1,237 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "skill": "planner",
+      "inputs": [
+        "USER_QUERY"
+      ],
+      "metadata": {},
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "planner",
+        "output": {
+          "rationale": "Classify each of the three reviews in parallel, then summarize the overall reception with a coder for numerical aggregation if needed.",
+          "nodes": [
+            {
+              "skill": "review_sentiment",
+              "inputs": [],
+              "metadata": {
+                "label": "rev1",
+                "question": "Amazing sound quality and the noise cancelling is best in class."
+              }
+            },
+            {
+              "skill": "review_sentiment",
+              "inputs": [],
+              "metadata": {
+                "label": "rev2",
+                "question": "They hurt my ears after an hour and the battery dies too fast."
+              }
+            },
+            {
+              "skill": "review_sentiment",
+              "inputs": [],
+              "metadata": {
+                "label": "rev3",
+                "question": "Okay for the price, nothing special but gets the job done."
+              }
+            },
+            {
+              "skill": "formatter",
+              "inputs": [
+                "USER_QUERY",
+                "n:rev1",
+                "n:rev2",
+                "n:rev3"
+              ],
+              "metadata": {
+                "label": "out"
+              }
+            }
+          ]
+        },
+        "artifacts": [],
+        "successors": [
+          {
+            "skill": "review_sentiment",
+            "inputs": [],
+            "metadata": {
+              "label": "rev1",
+              "question": "Amazing sound quality and the noise cancelling is best in class."
+            }
+          },
+          {
+            "skill": "review_sentiment",
+            "inputs": [],
+            "metadata": {
+              "label": "rev2",
+              "question": "They hurt my ears after an hour and the battery dies too fast."
+            }
+          },
+          {
+            "skill": "review_sentiment",
+            "inputs": [],
+            "metadata": {
+              "label": "rev3",
+              "question": "Okay for the price, nothing special but gets the job done."
+            }
+          },
+          {
+            "skill": "formatter",
+            "inputs": [
+              "USER_QUERY",
+              "n:rev1",
+              "n:rev2",
+              "n:rev3"
+            ],
+            "metadata": {
+              "label": "out"
+            }
+          }
+        ],
+        "cost": 0.0,
+        "elapsed_s": 6.414549827575684,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:1"
+    },
+    {
+      "skill": "review_sentiment",
+      "inputs": [],
+      "metadata": {
+        "label": "rev1",
+        "question": "Amazing sound quality and the noise cancelling is best in class."
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "review_sentiment",
+        "output": {
+          "sentiment": "positive",
+          "confidence": 0.98,
+          "rationale": "Praising the sound quality as 'amazing' and noise cancelling as 'best in class' makes this an unambiguously positive review."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 5.451258897781372,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:2"
+    },
+    {
+      "skill": "review_sentiment",
+      "inputs": [],
+      "metadata": {
+        "label": "rev2",
+        "question": "They hurt my ears after an hour and the battery dies too fast."
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "review_sentiment",
+        "output": {
+          "sentiment": "negative",
+          "confidence": 0.95,
+          "rationale": "Complaints that 'they hurt my ears' and 'the battery dies too fast' form an unambiguous negative review."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 9.224801778793335,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:3"
+    },
+    {
+      "skill": "review_sentiment",
+      "inputs": [],
+      "metadata": {
+        "label": "rev3",
+        "question": "Okay for the price, nothing special but gets the job done."
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "review_sentiment",
+        "output": {
+          "sentiment": "neutral",
+          "confidence": 0.88,
+          "rationale": "Described as 'nothing special but gets the job done,' reflecting a thoroughly lukewarm and neutral stance."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 1.1127331256866455,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:4"
+    },
+    {
+      "skill": "formatter",
+      "inputs": [
+        "USER_QUERY",
+        "n:2",
+        "n:3",
+        "n:4"
+      ],
+      "metadata": {
+        "label": "out"
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "formatter",
+        "output": {
+          "final_answer": "Sentiment Classification:\n1. Positive - Amazing sound quality and the noise cancelling is best in class.\n2. Negative - They hurt my ears after an hour and the battery dies too fast.\n3. Neutral - Okay for the price, nothing special but gets the job done.\n\nOverall Reception:\nThe reception is mixed, featuring one positive, one negative, and one neutral review. This indicates a polarized user experience where some users thoroughly enjoy the performance and features, while others experience comfort and battery life issues, and a third group finds them merely average."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 4.365380048751831,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:5"
+    }
+  ],
+  "edges": [
+    {
+      "source": "n:1",
+      "target": "n:2"
+    },
+    {
+      "source": "n:1",
+      "target": "n:3"
+    },
+    {
+      "source": "n:1",
+      "target": "n:4"
+    },
+    {
+      "source": "n:2",
+      "target": "n:5"
+    },
+    {
+      "source": "n:3",
+      "target": "n:5"
+    },
+    {
+      "source": "n:4",
+      "target": "n:5"
+    }
+  ]
+}

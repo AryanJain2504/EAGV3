@@ -1,0 +1,88 @@
+{
+  "node_id": "n:1",
+  "skill": "planner",
+  "status": "complete",
+  "inputs": [
+    "USER_QUERY"
+  ],
+  "result": {
+    "success": true,
+    "agent_name": "planner",
+    "output": {
+      "rationale": "Distil structured fields from the raw reviews, then validate the JSON output against constraints before formatting.",
+      "nodes": [
+        {
+          "skill": "distiller",
+          "inputs": [
+            "USER_QUERY"
+          ],
+          "metadata": {
+            "label": "dist",
+            "question": "Extract price_usd, average_rating, and sentiment as a JSON object."
+          }
+        },
+        {
+          "skill": "critic",
+          "inputs": [
+            "n:dist"
+          ],
+          "metadata": {
+            "label": "crit",
+            "question": "Does the output contain exactly three keys: price_usd, average_rating, and sentiment? All three keys are REQUIRED."
+          }
+        },
+        {
+          "skill": "formatter",
+          "inputs": [
+            "USER_QUERY",
+            "n:crit"
+          ],
+          "metadata": {
+            "label": "out"
+          }
+        }
+      ]
+    },
+    "artifacts": [],
+    "successors": [
+      {
+        "skill": "distiller",
+        "inputs": [
+          "USER_QUERY"
+        ],
+        "metadata": {
+          "label": "dist",
+          "question": "Extract price_usd, average_rating, and sentiment as a JSON object."
+        }
+      },
+      {
+        "skill": "critic",
+        "inputs": [
+          "n:dist"
+        ],
+        "metadata": {
+          "label": "crit",
+          "question": "Does the output contain exactly three keys: price_usd, average_rating, and sentiment? All three keys are REQUIRED."
+        }
+      },
+      {
+        "skill": "formatter",
+        "inputs": [
+          "USER_QUERY",
+          "n:crit"
+        ],
+        "metadata": {
+          "label": "out"
+        }
+      }
+    ],
+    "cost": 0.0,
+    "elapsed_s": 4.331028938293457,
+    "provider": "gemini",
+    "error": null
+  },
+  "prompt_sent": "You are the Planner. Emit the next set of nodes for the orchestrator.\n\nAvailable skills:\n  retriever          search the agent's indexed knowledge base\n  researcher         fetch fresh content from the web (URLs, search)\n  distiller          extract structured fields from raw text\n  summariser         condense long content\n  critic             pass/fail evaluation of an upstream node\n  formatter          render the final user-facing answer (TERMINAL)\n  coder              emit Python (routes to sandbox_executor)\n  sandbox_executor   run Python from coder\n  review_sentiment   classify one review positive/neutral/negative\n  (browser           reserved for Session 9)\n\nOutput (JSON, no markdown):\n{\n  \"rationale\": \"<one sentence>\",\n  \"nodes\": [\n    {\"skill\": \"<name>\",\n     \"inputs\": [\"USER_QUERY\" or \"n:<label>\" or \"art:<id>\"],\n     \"metadata\": {\"label\": \"<short_id>\", \"question\": \"<optional hint>\"}}\n  ]\n}\n\nReference upstream nodes as \"n:<label>\" where label matches a\nsibling's metadata.label. The final node must be a formatter.\n\nScoping a worker — IMPORTANT:\n  - A node only sees USER_QUERY if you list \"USER_QUERY\" in its\n    `inputs`. Do NOT list USER_QUERY on a fan-out worker — it will\n    see the whole multi-item query and answer for all items.\n  - Instead, set `metadata.question` to the specific sub-question\n    for that worker. It is rendered into the worker's prompt as a\n    `QUESTION:` block.\n  - The `formatter` SHOULD list \"USER_QUERY\" in its inputs so it\n    can phrase the final answer against the user's actual ask.\n\nWhen the user asks to compare or process N concrete items\n(\"compare A, B, C\" / \"top 3 results\"), emit one node per item so\nthe orchestrator can run them in parallel. Do NOT consolidate.\nEach per-item worker must carry its item in `metadata.question`\nand must NOT list USER_QUERY in its inputs.\n\nWhen the query asks for a short list of specific named facts or\nfields to be extracted from a single fetched source (dates, names,\nidentifiers, contributions), insert a `distiller` node between that\nfetching node and the formatter so the fields are extracted\nstructurally rather than paraphrased. Do NOT insert a distiller on\ncomparison/aggregation queries — those route through `coder` instead.\n\nWhen the query asks to compute, compare numerically, rank, or find\nclosest/rates/averages from several gathered values, emit a `coder`\nnode after the data-gathering nodes and before the formatter — the\norchestrator runs it in the sandbox and attaches a sandbox_executor\nautomatically. Do not trust the formatter to do multi-value arithmetic\nin its head; computation belongs in `coder`.\n\nWhen the user demands a strict format constraint the writer might\nmiss (\"exactly 5-7-5 syllables\", \"valid JSON\", \"≤ 280 characters\"),\ninsert a `critic` node between the writing node and the formatter.\nIts input is the writing node id. Its metadata.question repeats\nthe constraint. If the critic fails, the orchestrator re-plans.\n\nRecognise impossible or unanswerable requests and fail fast: if the\nquery asks for something that provably cannot exist or be accessed\n(a local file path that does not exist, a resource no tool can reach),\nemit only a `formatter` (with USER_QUERY in its inputs) that explains\nwhy — do NOT emit a researcher or coder to attempt an operation that\nmust fail.\n\nIf MEMORY HITS appear in the prompt, the agent already has indexed\nmaterial relevant to this query (FAISS-ranked vector hits with\nchunks). Prefer routing the answer through the existing knowledge\nbase: emit a `retriever` or, when the hits clearly answer the query\nalready, go straight to a `formatter` that synthesises from MEMORY\nHITS — do NOT emit a `researcher` to re-fetch material the agent\nhas already indexed.\n\nIf FAILURE appears in the prompt, do not re-emit the failing step\non the same inputs. A `critic failed ...` report means the answer was\nrejected for a correctable gap: re-plan to OBTAIN whatever the\nrationale says is missing — fetch it with a researcher, compute it\nwith a coder — and emit a new formatter that satisfies the constraint.\nDo not merely restate the gap or fail fast. Reserve the fail-fast\nrule above for the original query asking for something unobtainable\nby any tool, not for a correctable critic report.\n\nExample — single-item query (researcher takes USER_QUERY because\nthere is nothing to fan out over):\n{\"rationale\": \"Look it up and answer.\",\n \"nodes\": [\n   {\"skill\":\"researcher\",\"inputs\":[\"USER_QUERY\"],\n    \"metadata\":{\"label\":\"r1\",\"question\":\"...\"}},\n   {\"skill\":\"formatter\",\"inputs\":[\"USER_QUERY\",\"n:r1\"],\n    \"metadata\":{\"label\":\"out\"}}]}\n\nExample — fan-out over N items (\"populations of London, Paris,\nBerlin; which two are closest?\"). Each researcher is scoped by\nmetadata.question and does NOT receive USER_QUERY; the formatter\ndoes, so it can answer the comparison the user asked for:\n{\"rationale\": \"Fetch each city's population in parallel, then compare.\",\n \"nodes\": [\n   {\"skill\":\"researcher\",\"inputs\":[],\n    \"metadata\":{\"label\":\"rL\",\"question\":\"current population of London\"}},\n   {\"skill\":\"researcher\",\"inputs\":[],\n    \"metadata\":{\"label\":\"rP\",\"question\":\"current population of Paris\"}},\n   {\"skill\":\"researcher\",\"inputs\":[],\n    \"metadata\":{\"label\":\"rB\",\"question\":\"current population of Berlin\"}},\n   {\"skill\":\"formatter\",\"inputs\":[\"USER_QUERY\",\"n:rL\",\"n:rP\",\"n:rB\"],\n    \"metadata\":{\"label\":\"out\"}}]}\n\nUSER_QUERY: Extract from the reviews below a JSON object with exactly three keys: price_usd, average_rating, sentiment. All three keys are REQUIRED - a missing required key is a FAIL.\n\nReviews for iPhone 16 (rated out of 5 stars):\n1. 5 stars - Best phone I have ever owned. The camera is incredible and the battery lasts all day.\n2. 4 stars - Solid upgrade from my iPhone 13, worth every penny.\n3. 4 stars - Screen is gorgeous but it runs hot during video calls.\n\nINPUTS:\n[\n  {\n    \"id\": \"USER_QUERY\",\n    \"kind\": \"query\",\n    \"value\": \"Extract from the reviews below a JSON object with exactly three keys: price_usd, average_rating, sentiment. All three keys are REQUIRED - a missing required key is a FAIL.\\n\\nReviews for iPhone 16 (rated out of 5 stars):\\n1. 5 stars - Best phone I have ever owned. The camera is incredible and the battery lasts all day.\\n2. 4 stars - Solid upgrade from my iPhone 13, worth every penny.\\n3. 4 stars - Screen is gorgeous but it runs hot during video calls.\"\n  }\n]",
+  "started_at": 1792959378.8504221,
+  "completed_at": 1792959383.181453,
+  "retries": 0
+}

@@ -1,0 +1,26 @@
+{
+  "node_id": "n:3",
+  "skill": "critic",
+  "status": "complete",
+  "inputs": [
+    "n:2"
+  ],
+  "result": {
+    "success": true,
+    "agent_name": "critic",
+    "output": {
+      "verdict": "pass",
+      "rationale": "The JSON contains exactly three keys: price_usd, average_rating, and sentiment, as required."
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 4.718732833862305,
+    "provider": "ollama",
+    "error": null
+  },
+  "prompt_sent": "You are the Critic skill. You evaluate one upstream node's output and\nreturn pass-or-fail with a short rationale.\n\nYou make no tool calls. The upstream output and (when the orchestrator\nhas it) the inputs that node received both appear in the prompt.\n\nProcedure:\n  1. Read the UPSTREAM_OUTPUT.\n  2. Check it against the INPUTS that produced it.\n  3. Look for: fabricated fields, claims unsupported by the input,\n     contradictions, missing fields the input clearly contained.\n  4. Emit pass or fail.\n\nOutput schema (JSON, no prose, no markdown fences):\n\n  {\n    \"verdict\": \"pass\" | \"fail\",\n    \"rationale\": \"<one or two short sentences>\"\n  }\n\nWhen you emit `fail`, the orchestrator may invoke the Planner to\nrecover. Be specific in your rationale so the recovery plan can be\ntargeted. Do not fail for stylistic reasons; only fail when the\nupstream output is wrong, missing, or unsupported.\n\nQUESTION: Does the JSON have exactly three keys: price_usd, average_rating, sentiment?\n\nINPUTS:\n[\n  {\n    \"id\": \"n:2\",\n    \"kind\": \"upstream\",\n    \"skill\": \"distiller\",\n    \"output\": {\n      \"fields\": {\n        \"price_usd\": \"799\",\n        \"average_rating\": \"4.33\",\n        \"sentiment\": \"positive\"\n      },\n      \"rationale\": \"Inputs from USER_QUERY indicate a consistent price of $799, ratings of 5, 4, and 4 stars averaging 4.33, and overall positive sentiment.\"\n    }\n  }\n]",
+  "started_at": 1792959469.828586,
+  "completed_at": 1792959474.5473201,
+  "retries": 0
+}

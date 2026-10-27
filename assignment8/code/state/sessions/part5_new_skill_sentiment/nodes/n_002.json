@@ -1,0 +1,25 @@
+{
+  "node_id": "n:2",
+  "skill": "review_sentiment",
+  "status": "complete",
+  "inputs": [],
+  "result": {
+    "success": true,
+    "agent_name": "review_sentiment",
+    "output": {
+      "sentiment": "positive",
+      "confidence": 0.98,
+      "rationale": "Praising the sound quality as 'amazing' and noise cancelling as 'best in class' makes this an unambiguously positive review."
+    },
+    "artifacts": [],
+    "successors": [],
+    "cost": 0.0,
+    "elapsed_s": 5.451258897781372,
+    "provider": "gemini",
+    "error": null
+  },
+  "prompt_sent": "You are the ReviewSentiment skill. You read one product or service\nreview and classify its sentiment.\n\nYou make no tool calls. The review text appears in QUESTION (when the\nPlanner scoped this node to a single review) or in INPUTS (when the\nreview arrived as upstream output). If several reviews appear, analyse\nonly the one QUESTION names.\n\nProcedure:\n  1. Locate the review text. It is on the `QUESTION:` line that\n     appears AFTER the Examples section below (a bare sentence, no\n     prefix), or inside an INPUTS entry. That line IS the review to\n     classify — it is not another example.\n  2. Weigh the overall direction of the author's opinion — do not let\n     one quoted complaint inside an otherwise positive review flip\n     the label.\n  3. Assign the label and a calibrated confidence:\n       0.90-1.00  unambiguous, consistent throughout\n       0.60-0.89  clear but with minor mixed signals\n       0.30-0.59  genuinely mixed / lukewarm\n       below 0.30  you could not tell — use \"neutral\"\n  4. Ground the rationale in a specific phrase or detail from the\n     review, quoted or paraphrased.\n\nRules:\n  - Labels are exactly one of: \"positive\", \"neutral\", \"negative\".\n    No synonyms, no capitalisation variants.\n  - confidence is a JSON number between 0 and 1 (not a string,\n    not a percentage).\n  - Never invent review content. A review may legitimately arrive in\n    QUESTION alone (fan-out workers have an empty INPUTS block) — an\n    empty INPUTS list by itself does NOT mean no review was provided.\n    Only when NO review text appears in either QUESTION or INPUTS\n    should you emit sentiment \"neutral\" with confidence 0.0 and state\n    in the rationale that no review was provided.\n\nOutput schema (JSON, no prose, no markdown fences):\n\n  {\n    \"sentiment\": \"positive\" | \"neutral\" | \"negative\",\n    \"confidence\": <number 0..1>,\n    \"rationale\": \"<one short sentence citing the review's own words>\"\n  }\n\nExamples:\n\nQUESTION: Battery still lasts two full days. Camera is sharp even in low light. Only the charger was cheap.\n{\"sentiment\": \"positive\", \"confidence\": 0.93, \"rationale\": \"Two-day battery and sharp low-light camera are strong endorsements; the cheap charger is a minor aside.\"}\n\nQUESTION: Packaging was fine I guess. Does what it says. Would not buy again but wouldn't warn anyone off either.\n{\"sentiment\": \"neutral\", \"confidence\": 0.85, \"rationale\": \"Explicitly lukewarm — 'would not buy again but wouldn't warn anyone off' is a textbook neutral stance.\"}\n\nQUESTION: Stopped working after nine days and support sent me a looped bot reply. Total waste.\n{\"sentiment\": \"negative\", \"confidence\": 0.97, \"rationale\": \"Product failed in under two weeks and support was unhelpful — unambiguously negative.\"}\n\nYour own input follows the same shape: a single `QUESTION:` line\ncarrying exactly one review (or a review inside INPUTS). Classify\nthat review and emit only the JSON object.\n\nQUESTION: Amazing sound quality and the noise cancelling is best in class.\n\nINPUTS:\n[]",
+  "started_at": 1792959926.4628363,
+  "completed_at": 1792959931.9140968,
+  "retries": 0
+}

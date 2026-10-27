@@ -1,0 +1,6 @@
+Extract from the reviews below a JSON object with exactly three keys: price_usd, average_rating, sentiment. All three keys are REQUIRED - a missing required key is a FAIL.
+
+Reviews for iPhone 16 (rated out of 5 stars):
+1. 5 stars - Best phone I have ever owned. The camera is incredible and the battery lasts all day.
+2. 4 stars - Solid upgrade from my iPhone 13, worth every penny.
+3. 4 stars - Screen is gorgeous but it runs hot during video calls.

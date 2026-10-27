@@ -1,0 +1,358 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "skill": "planner",
+      "inputs": [
+        "USER_QUERY"
+      ],
+      "metadata": {},
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "planner",
+        "output": {
+          "rationale": "Distil structured fields from the raw reviews, then validate the JSON output against constraints before formatting.",
+          "nodes": [
+            {
+              "skill": "distiller",
+              "inputs": [
+                "USER_QUERY"
+              ],
+              "metadata": {
+                "label": "dist",
+                "question": "Extract price_usd, average_rating, and sentiment as a JSON object."
+              }
+            },
+            {
+              "skill": "critic",
+              "inputs": [
+                "n:dist"
+              ],
+              "metadata": {
+                "label": "crit",
+                "question": "Does the output contain exactly three keys: price_usd, average_rating, and sentiment? All three keys are REQUIRED."
+              }
+            },
+            {
+              "skill": "formatter",
+              "inputs": [
+                "USER_QUERY",
+                "n:crit"
+              ],
+              "metadata": {
+                "label": "out"
+              }
+            }
+          ]
+        },
+        "artifacts": [],
+        "successors": [
+          {
+            "skill": "distiller",
+            "inputs": [
+              "USER_QUERY"
+            ],
+            "metadata": {
+              "label": "dist",
+              "question": "Extract price_usd, average_rating, and sentiment as a JSON object."
+            }
+          },
+          {
+            "skill": "critic",
+            "inputs": [
+              "n:dist"
+            ],
+            "metadata": {
+              "label": "crit",
+              "question": "Does the output contain exactly three keys: price_usd, average_rating, and sentiment? All three keys are REQUIRED."
+            }
+          },
+          {
+            "skill": "formatter",
+            "inputs": [
+              "USER_QUERY",
+              "n:crit"
+            ],
+            "metadata": {
+              "label": "out"
+            }
+          }
+        ],
+        "cost": 0.0,
+        "elapsed_s": 4.331028938293457,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:1"
+    },
+    {
+      "skill": "distiller",
+      "inputs": [
+        "USER_QUERY"
+      ],
+      "metadata": {
+        "label": "dist",
+        "question": "Extract price_usd, average_rating, and sentiment as a JSON object."
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "distiller",
+        "output": {
+          "fields": {},
+          "rationale": "No evidence for price_usd, average_rating, or sentiment exists in the provided inputs."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 3.616774082183838,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:2"
+    },
+    {
+      "skill": "critic",
+      "inputs": [
+        "n:2"
+      ],
+      "metadata": {
+        "label": "crit",
+        "question": "Does the output contain exactly three keys: price_usd, average_rating, and sentiment? All three keys are REQUIRED."
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "critic",
+        "output": {
+          "verdict": "fail",
+          "rationale": "The output lacks the required keys (price_usd, average_rating, sentiment) as they are not present in the input data."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 2.3673601150512695,
+        "provider": "ollama",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:3"
+    },
+    {
+      "skill": "formatter",
+      "inputs": [
+        "USER_QUERY",
+        "n:3"
+      ],
+      "metadata": {
+        "label": "out"
+      },
+      "status": "skipped",
+      "id": "n:4"
+    },
+    {
+      "skill": "planner",
+      "inputs": [
+        "USER_QUERY"
+      ],
+      "metadata": {
+        "failure_report": "critic failed target=n:2 child=n:4 rationale=The output lacks the required keys (price_usd, average_rating, sentiment) as they are not present in the input data.",
+        "recovers": "n:2",
+        "recovery_reason": "critic_fail"
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "planner",
+        "output": {
+          "rationale": "The reviews lack price_usd, so we must research the current price of iPhone 16 on the web before formatting and validating the JSON.",
+          "nodes": [
+            {
+              "skill": "researcher",
+              "inputs": [],
+              "metadata": {
+                "label": "price_res",
+                "question": "current price of iPhone 16 in USD"
+              }
+            },
+            {
+              "skill": "formatter",
+              "inputs": [
+                "USER_QUERY",
+                "n:price_res"
+              ],
+              "metadata": {
+                "label": "writer",
+                "question": "Produce the requested JSON object containing price_usd, average_rating (calculated from the reviews: 4.33 out of 5), and overall sentiment."
+              }
+            },
+            {
+              "skill": "critic",
+              "inputs": [
+                "n:writer"
+              ],
+              "metadata": {
+                "label": "out",
+                "question": "Verify the output is a valid JSON object containing exactly three keys: price_usd, average_rating, and sentiment."
+              }
+            }
+          ]
+        },
+        "artifacts": [],
+        "successors": [
+          {
+            "skill": "researcher",
+            "inputs": [],
+            "metadata": {
+              "label": "price_res",
+              "question": "current price of iPhone 16 in USD"
+            }
+          },
+          {
+            "skill": "formatter",
+            "inputs": [
+              "USER_QUERY",
+              "n:price_res"
+            ],
+            "metadata": {
+              "label": "writer",
+              "question": "Produce the requested JSON object containing price_usd, average_rating (calculated from the reviews: 4.33 out of 5), and overall sentiment."
+            }
+          },
+          {
+            "skill": "critic",
+            "inputs": [
+              "n:writer"
+            ],
+            "metadata": {
+              "label": "out",
+              "question": "Verify the output is a valid JSON object containing exactly three keys: price_usd, average_rating, and sentiment."
+            }
+          }
+        ],
+        "cost": 0.0,
+        "elapsed_s": 2.23529314994812,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:5"
+    },
+    {
+      "skill": "researcher",
+      "inputs": [],
+      "metadata": {
+        "label": "price_res",
+        "question": "current price of iPhone 16 in USD"
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "researcher",
+        "output": {
+          "question": "current price of iPhone 16 in USD",
+          "sources": [
+            {
+              "url": "https://www.apple.com/newsroom/2024/09/apple-introduces-iphone-16-and-iphone-16-plus/",
+              "title": "Apple introduces iPhone 16 and iPhone 16 Plus - Apple"
+            },
+            {
+              "url": "https://www.refurb.me/blog/refurbished-iphone-16",
+              "title": "Is a Refurbished iPhone 16 Worth It in 2026?"
+            }
+          ],
+          "findings": "The iPhone 16 was originally launched by Apple in September 2024 with a base starting price of $799 USD in the United States. \n\nDepending on the specific configuration tier within the iPhone 16 lineup\u2014such as the iPhone 16 Plus, iPhone 16 Pro, or iPhone 16 Pro Max\u2014launch prices ranged from $799 up to $1,599 USD for the highest-end pro models.\n\nRefurbished or second-hand units available through third-party platforms may vary, but the baseline retail configuration for a standard new iPhone 16 begins at $799 USD."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 29.892006158828735,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:6"
+    },
+    {
+      "skill": "formatter",
+      "inputs": [
+        "USER_QUERY",
+        "n:6"
+      ],
+      "metadata": {
+        "label": "writer",
+        "question": "Produce the requested JSON object containing price_usd, average_rating (calculated from the reviews: 4.33 out of 5), and overall sentiment."
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "formatter",
+        "output": {
+          "final_answer": "{\n  \"price_usd\": 799,\n  \"average_rating\": 4.33,\n  \"sentiment\": \"positive\"\n}"
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 2.751729965209961,
+        "provider": "gemini",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:7"
+    },
+    {
+      "skill": "critic",
+      "inputs": [
+        "n:7"
+      ],
+      "metadata": {
+        "label": "out",
+        "question": "Verify the output is a valid JSON object containing exactly three keys: price_usd, average_rating, and sentiment."
+      },
+      "status": "complete",
+      "result": {
+        "success": true,
+        "agent_name": "critic",
+        "output": {
+          "verdict": "pass",
+          "rationale": "The output is a valid JSON object with exactly the required keys: price_usd, average_rating, and sentiment. All fields are present and match the expected structure."
+        },
+        "artifacts": [],
+        "successors": [],
+        "cost": 0.0,
+        "elapsed_s": 2.9458181858062744,
+        "provider": "ollama",
+        "error": null
+      },
+      "_result_typed": true,
+      "id": "n:8"
+    }
+  ],
+  "edges": [
+    {
+      "source": "n:2",
+      "target": "n:3"
+    },
+    {
+      "source": "n:3",
+      "target": "n:4"
+    },
+    {
+      "source": "n:5",
+      "target": "n:6"
+    },
+    {
+      "source": "n:6",
+      "target": "n:7"
+    },
+    {
+      "source": "n:7",
+      "target": "n:8"
+    }
+  ]
+}
